@@ -1,161 +1,126 @@
 "use client";
 
-import { BookOpen, CalendarDays, FileText, Layers3 } from "lucide-react";
 import Image from "next/image";
-
+import { Icon, type IconName } from "@/components/ui";
+import { appConfig } from "@/packages/configs/app.config";
+import type { TopicColor } from "@/packages/configs/content.config";
 import { imagesConfig } from "@/packages/configs/images.config";
 import { useCountUp } from "@/packages/hooks/use-count-up";
+import { topicStyle } from "@/packages/utils/topic";
+import type { KnowledgeStats } from "@/types/app";
 
 type HeroStatProps = {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
+  icon: IconName;
+  color: TopicColor;
+  top: string;
+  bottom: string;
+  /** Label above value (used by "Last Updated"). */
+  labelFirst?: boolean;
 };
 
-function HeroStat({ icon, value, label }: HeroStatProps) {
-  return (
-    <div className="flex min-w-0 items-center gap-2.5">
-      <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-primary/20 bg-primary/10 text-primary">
-        {icon}
-      </div>
+const HeroStat = ({ icon, color, top, bottom, labelFirst }: HeroStatProps) => (
+  <div className="flex min-w-0 items-center gap-2.5" style={topicStyle(color)}>
+    <span className="topic-badge grid size-[26px] shrink-0 place-items-center rounded-md">
+      <Icon name={icon} size={14} />
+    </span>
+    <span className="min-w-0 leading-none">
+      <span
+        className={
+          labelFirst
+            ? "block text-xs text-foreground/85"
+            : "block text-sm font-semibold text-foreground"
+        }
+      >
+        {top}
+      </span>
+      <span className="mt-1.5 block text-xs text-muted-foreground">
+        {bottom}
+      </span>
+    </span>
+  </div>
+);
 
-      <div className="min-w-0">
-        <div className="text-sm font-semibold leading-none text-foreground">
-          {value}
-        </div>
+const formatWords = (words: number) =>
+  words >= 1000 ? `${Math.round(words / 1000)}K` : String(words);
 
-        <div className="mt-1 text-[10px] leading-none text-muted-foreground">
-          {label}
-        </div>
-      </div>
-    </div>
-  );
-}
+const dateFormatter = new Intl.DateTimeFormat("en", {
+  dateStyle: "medium",
+  timeZone: "UTC",
+});
 
-function formatCompactNumber(value: number): string {
-  if (value >= 1000) {
-    return `${Math.round(value / 1000)}K`;
-  }
+type DocsHeroProps = { stats: KnowledgeStats };
 
-  return value.toString();
-}
-
-export function DocsHero() {
-  const articles = useCountUp(26, {
-    duration: 1200,
-  });
-
-  const topics = useCountUp(8, {
-    duration: 1400,
-  });
-
-  const words = useCountUp(124, {
-    duration: 1600,
-  });
-
-  const activeHeroImage = imagesConfig.heroImages.active;
+export const DocsHero = ({ stats }: DocsHeroProps) => {
+  const articles = useCountUp(stats.articles, { duration: 1000 });
+  const topics = useCountUp(stats.topics, { duration: 1100 });
+  const words = useCountUp(stats.words, { duration: 1300 });
+  const image = imagesConfig.heroImages.active;
+  const { hero } = appConfig;
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60">
-      {/* Background glow */}
+    <section className="relative isolate min-h-[265px] overflow-hidden sm:min-h-[265px]">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="absolute left-[35%] top-0 size-72 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]" />
+        className="pointer-events-none absolute -left-24 top-0 -z-10 size-72 rounded-full bg-primary/15 blur-[110px]"
+      />
 
-        <div className="absolute right-0 top-1/2 size-96 -translate-y-1/2 rounded-full bg-violet-500/5 blur-[140px]" />
+      <div className="hero-photo absolute inset-y-0 right-0 -z-10 w-full opacity-40 sm:w-[64%] sm:opacity-100">
+        <Image
+          alt={image.alt}
+          className="object-cover object-[62%_50%]"
+          fill
+          priority={image.priority}
+          sizes="(max-width: 640px) 100vw, 560px"
+          src={image.src}
+        />
       </div>
 
-      <div className="mx-auto grid max-w-[1600px] grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.85fr)]">
-        {/* Content */}
-        <div className="relative flex min-h-90 flex-col justify-center px-5 py-12 sm:px-8 lg:min-h-107.5 lg:px-12 xl:px-16">
-          <div className="max-w-2xl">
-            {/* Eyebrow */}
-            <div className="mb-4 flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-primary shadow-[0_0_12px_var(--primary)]" />
+      <div className="relative max-w-[26rem] pb-8 pt-6 sm:pb-0">
+        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-soft">
+          {hero.eyebrow}
+        </p>
 
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
-                Knowledge Base
-              </span>
-            </div>
+        <h1 className="mt-3 text-balance text-[2.35rem] font-bold leading-[1.08] tracking-[-0.045em] text-foreground sm:text-[2.7rem]">
+          {hero.title}
+          <br />
+          {hero.highlightPrefix}{" "}
+          <span className="text-gradient">{hero.highlight}</span>
+        </h1>
 
-            {/* Heading */}
-            <h1 className="text-balance text-4xl font-bold tracking-[-0.045em] text-foreground sm:text-5xl lg:text-[3.7rem] lg:leading-[0.98] xl:text-[4.15rem]">
-              Things I’ve learned
-              <br />
-              building{" "}
-              <span className="gradient bg-clip-text text-transparent">
-                on the web.
-              </span>
-            </h1>
+        <p className="mt-4 max-w-[21.5rem] text-sm leading-5 text-muted-foreground">
+          {hero.subtitle}
+        </p>
 
-            {/* Description */}
-            <p className="mt-5 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-              A growing collection of guides, notes, and resources on
-              development, freelancing, careers and more.
-            </p>
-
-            {/* Stats */}
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
-              <HeroStat
-                icon={<FileText className="size-3.5" />}
-                value={articles.toString()}
-                label="Articles"
-              />
-
-              <HeroStat
-                icon={<Layers3 className="size-3.5" />}
-                value={topics.toString()}
-                label="Topics"
-              />
-
-              <HeroStat
-                icon={<BookOpen className="size-3.5" />}
-                value={`${formatCompactNumber(words)}K`}
-                label="Words"
-              />
-
-              <HeroStat
-                icon={<CalendarDays className="size-3.5" />}
-                value="Sep 21"
-                label="Last Updated"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Image */}
-        <div className="relative min-h-70 overflow-hidden lg:min-h-107.5">
-          {/* Image */}
-          <Image
-            src={activeHeroImage.src}
-            alt={activeHeroImage.alt}
-            fill
-            priority={activeHeroImage.priority}
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover object-center"
+        <div className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-4">
+          <HeroStat
+            bottom="Articles"
+            color="sky"
+            icon="file-text"
+            top={String(articles)}
           />
-
-          {/* Left fade */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-background via-background/70 to-transparent"
+          <HeroStat
+            bottom="Topics"
+            color="teal"
+            icon="layers"
+            top={String(topics)}
           />
-
-          {/* Bottom fade */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-background via-background/20 to-transparent"
+          <HeroStat
+            bottom="Words"
+            color="green"
+            icon="book-open"
+            top={formatWords(words)}
           />
-
-          {/* Overall image tint */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-primary/5 mix-blend-screen"
-          />
+          {stats.lastUpdated && (
+            <HeroStat
+              bottom={dateFormatter.format(new Date(stats.lastUpdated))}
+              color="rose"
+              icon="calendar"
+              labelFirst
+              top="Last Updated"
+            />
+          )}
         </div>
       </div>
     </section>
   );
-}
+};

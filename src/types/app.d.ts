@@ -1,4 +1,5 @@
 import type { IconName } from "@/components/ui";
+import type { TopicColor } from "@/packages/configs/content.config";
 
 export type TocItem = {
   id: string;
@@ -22,6 +23,11 @@ export type Doc = {
   keywords: string[];
   featured: boolean;
   order?: number;
+  /** Optional cover image path (front-matter `image`). */
+  image?: string;
+  /** Higher = shown earlier in "Popular" (front-matter `popularity`). */
+  popularity: number;
+  wordCount: number;
   headings: TocItem[];
   /** Markdown body (first `# Heading` already removed when used as the title). */
   content: string;
@@ -36,6 +42,7 @@ export type Category = {
   title: string;
   description: string;
   icon: IconName;
+  color: TopicColor;
   docs: Doc[];
 };
 
@@ -66,4 +73,14 @@ export type SearchEntry = {
   categoryTitle: string;
   keywords: string[];
   headings: TocItem[];
+};
+
+export type CategoryInfo = { title: string; color: TopicColor };
+
+export type KnowledgeStats = {
+  articles: number;
+  topics: number;
+  words: number;
+  /** ISO 8601 of the most recently updated doc */
+  lastUpdated?: string;
 };

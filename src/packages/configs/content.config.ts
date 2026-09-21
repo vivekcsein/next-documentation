@@ -1,5 +1,31 @@
 import type { IconName } from "@/components/ui";
 
+/** Accent colours for topics (dots, icon tiles, card tints, badges). */
+export const topicPalette = {
+  sky: "#38bdf8",
+  green: "#34d399",
+  orange: "#fb923c",
+  violet: "#8b7bff",
+  magenta: "#d946ef",
+  blue: "#4f8cff",
+  rose: "#fb4f7a",
+  teal: "#2dd4bf",
+  amber: "#fbbf24",
+} as const;
+
+export type TopicColor = keyof typeof topicPalette;
+
+/** Used, in order, for categories that don't set a `color`. */
+export const fallbackTopicColors: readonly TopicColor[] = [
+  "sky",
+  "green",
+  "orange",
+  "violet",
+  "magenta",
+  "blue",
+  "rose",
+];
+
 /**
  * Content layout (nothing to register — folders ARE the structure):
  *
@@ -30,13 +56,12 @@ export const collectionConfig: Readonly<Record<string, CollectionMeta>> = {
     order: 1,
     icon: "book",
   },
-  // Example — uncomment after creating src/content/code/…
-  // code: {
-  //   title: "Code",
-  //   description: "Snippets, patterns and cheat-sheets you can copy and paste.",
-  //   order: 2,
-  //   icon: "file",
-  // },
+  code: {
+    title: "Code",
+    description: "Snippets, patterns and cheat-sheets you can copy and paste.",
+    order: 2,
+    icon: "code",
+  },
 };
 
 export type CategoryMeta = {
@@ -45,23 +70,42 @@ export type CategoryMeta = {
   /** Lower first inside its collection. */
   order: number;
   icon: IconName;
+  /** Accent colour; defaults to a rotating palette. */
+  color?: TopicColor;
 };
 
 /** Keyed by `<collection>/<category>`. */
 export const categoryConfig: Readonly<Record<string, CategoryMeta>> = {
   "docs/top-content": {
-    title: "Top Content",
+    title: "Business",
     description:
-      "Our most useful guides on freelancing, job hunting and getting paid for your skills.",
+      "Guides on freelancing, job hunting and getting paid for your skills.",
     order: 1,
     icon: "trending-up",
+    color: "orange",
+  },
+  "docs/interview": {
+    title: "Interview",
+    description:
+      "Question banks with clear answers for JavaScript, React and Next.js interviews.",
+    order: 2,
+    icon: "target",
+    color: "magenta",
   },
   "docs/others": {
     title: "Other Resources",
     description:
       "Additional guides, references and resources that don't fit a bigger category yet.",
     order: 99,
-    icon: "folder",
+    icon: "file-text",
+    color: "rose",
+  },
+  "code/general": {
+    title: "Snippets",
+    description: "Copy-ready code snippets and cheat-sheets.",
+    order: 1,
+    icon: "code",
+    color: "sky",
   },
 };
 
@@ -82,6 +126,7 @@ export const reservedCollections: ReadonlySet<string> = new Set([
   "feed",
   "sitemap",
   "robots",
+  "bookmarks",
 ]);
 
 /**

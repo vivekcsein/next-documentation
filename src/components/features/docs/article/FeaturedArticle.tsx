@@ -1,83 +1,92 @@
-import { ArrowRight, CalendarDays, Clock3 } from "lucide-react";
 import Image from "next/image";
-
+import Link from "next/link";
+import { Icon, type IconName } from "@/components/ui";
 import {
   InteractiveCard,
   InteractiveCardContent,
 } from "@/components/ui/card/InteractiveCard";
+import type { TopicColor } from "@/packages/configs/content.config";
+import { formatDate, formatReadingTime } from "@/packages/utils/format";
+import { topicStyle } from "@/packages/utils/topic";
+import type { DocSummary } from "@/types/app";
+import { ArticleArt } from "./ArticleArt";
 
-export function FeaturedArticle() {
-  return (
-    <InteractiveCard
-      className="min-h-75 lg:min-h-80"
-      aria-label="The Complete Guide to Web Authentication"
-    >
-      {/* Background image */}
-      <Image
-        src="/images/blog/authentication.webp"
-        alt=""
-        fill
-        data-card-image
-        sizes="(max-width: 1024px) 100vw, 900px"
-        className="object-cover object-center"
-      />
+type FeaturedArticleProps = {
+  doc: DocSummary;
+  category: { title: string; color: TopicColor; icon: IconName };
+};
 
-      {/* Image overlay */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-linear-to-r from-background via-background/75 to-background/20"
-      />
+export const FeaturedArticle = ({ doc, category }: FeaturedArticleProps) => (
+  <InteractiveCard
+    aria-label={doc.title}
+    className="min-h-51.25 border-primary/35 shadow-[0_0_44px_-18px_var(--primary)]"
+    style={topicStyle(category.color)}
+  >
+    {/* Cover: real image if the doc sets `image`, generated art otherwise */}
+    <div className="absolute inset-y-0 right-0 w-[62%]">
+      {doc.image ? (
+        <Image
+          alt=""
+          className="object-cover"
+          data-card-image
+          fill
+          sizes="(max-width: 1024px) 100vw, 560px"
+          src={doc.image}
+        />
+      ) : (
+        <ArticleArt
+          className="size-full"
+          color={category.color}
+          icon={category.icon}
+        />
+      )}
+      <div className="absolute inset-0 bg-linear-to-r from-card via-card/40 to-transparent" />
+    </div>
 
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-linear-to-t from-background/80 via-transparent to-transparent"
-      />
-
-      {/* Content */}
-      <InteractiveCardContent className="justify-between p-5 sm:p-6 lg:p-7">
-        <div className="max-w-[52%]">
-          {/* Category */}
-          <span className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-1 text-[10px] font-medium text-cyan-300">
-            Backend
-          </span>
-
-          {/* Title */}
-          <h2 className="mt-3 max-w-md text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            The Complete Guide to Web Authentication
-          </h2>
-
-          {/* Description */}
-          <p className="mt-2 max-w-lg text-sm leading-5 text-muted-foreground">
-            Learn how to build secure and scalable authentication systems using
-            modern techniques, with real-world examples.
-          </p>
-        </div>
-
-        {/* Bottom */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <Clock3 className="size-3.5" />
-              32 min read
-            </span>
-
-            <span className="inline-flex items-center gap-1.5">
-              <CalendarDays className="size-3.5" />
-              Sep 18, 2026
-            </span>
-          </div>
-
-          <button
-            type="button"
-            className="group/button inline-flex items-center gap-2 rounded-full border border-primary/50 bg-background/40 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+    <InteractiveCardContent className="justify-between gap-5 p-6 sm:min-h-[205px]">
+      <div className="max-w-[54%] min-w-[15rem]">
+        <span className="topic-badge inline-flex rounded-md px-2 py-0.5 text-[10px] font-medium">
+          {category.title}
+        </span>
+        <h3 className="mt-3.5 text-balance text-[1.5rem] font-semibold leading-[1.12] tracking-tight text-foreground">
+          <Link
+            className="after:absolute after:inset-0 after:z-10"
+            href={doc.href}
           >
-            Read Guide
-            <span data-card-arrow>
-              <ArrowRight className="size-3.5" />
-            </span>
-          </button>
-        </div>
-      </InteractiveCardContent>
-    </InteractiveCard>
-  );
-}
+            {doc.title}
+          </Link>
+        </h3>
+        <p className="mt-2.5 line-clamp-2 max-w-md text-[13px] leading-5 text-muted-foreground">
+          {doc.description}
+        </p>
+      </div>
+
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <Icon name="clock" size={13} />
+          {formatReadingTime(doc.readingMinutes)}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <Icon name="calendar" size={13} />
+          {formatDate(doc.updatedAt)}
+        </span>
+        <span className="ml-2 inline-flex items-center gap-2 rounded-full border border-foreground/40 bg-background/40 px-3.5 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground max-sm:hidden">
+          Read Guide
+          <span data-card-arrow>
+            <Icon name="arrow-right" size={14} />
+          </span>
+        </span>
+      </div>
+    </InteractiveCardContent>
+
+    {doc.keywords.length > 2 && (
+      <ul className="absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 border-l border-foreground/15 pl-5 text-[13px] text-foreground/80 lg:block">
+        {doc.keywords.slice(0, 5).map((keyword) => (
+          <li className="py-[5px] capitalize" key={keyword}>
+            {keyword}
+          </li>
+        ))}
+      </ul>
+    )}
+  </InteractiveCard>
+);

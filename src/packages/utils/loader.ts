@@ -9,15 +9,18 @@ import {
   docDefaults,
   fallbackCategory,
   fallbackCollection,
+  fallbackTopicColors,
   reservedCollections,
 } from "@/packages/configs/content.config";
 import type {
   Category,
+  CategoryInfo,
   CategorySummary,
   Collection,
   CollectionSummary,
   Doc,
   DocSummary,
+  KnowledgeStats,
   SearchEntry,
 } from "../../types/app";
 import {
@@ -58,6 +61,8 @@ const frontmatterSchema = z.object({
   order: z.number().optional(),
   featured: z.boolean().optional(),
   draft: z.boolean().optional(),
+  image: z.string().optional(),
+  popularity: z.number().optional(),
 });
 
 const assertSafeName = (name: string, file: string) => {
@@ -94,9 +99,13 @@ const readDoc = (
   collection: string,
   category: string,
   fileName: string,
+  /** File sits directly in the collection folder (no category folder). */
+  loose = false,
 ): Doc | null => {
   const slug = fileName.replace(/\.md$/, "");
-  const file = path.join(CONTENT_ROOT, collection, category, fileName);
+  const file = loose
+    ? path.join(CONTENT_ROOT, collection, fileName)
+    : path.join(CONTENT_ROOT, collection, category, fileName);
   assertSafeName(slug, file);
 
   const parsed = matter(fs.readFileSync(file, "utf-8"));
@@ -109,7 +118,8 @@ const readDoc = (
   }
 
   const meta = result.data;
-  if (meta.draft && process.env.NODE_ENV !== "production") {
+  if (meta.draft) {
+    if (process.env.NODE_ENV === "production") return null;
     console.warn(`"${collection}/${category}/${slug}" is marked as draft.`);
   }
 
@@ -146,13 +156,24 @@ const readDoc = (
     keywords: meta.keywords ?? [],
     featured: meta.featured ?? false,
     order: meta.order,
+    image: meta.image,
+    popularity: meta.popularity ?? 0,
+    wordCount: body.match(/\S+/g)?.length ?? 0,
     headings: extractHeadings(body),
     content: body,
   };
 };
 
-const readCategory = (collection: string, key: string): Category => {
-  const dir = path.join(CONTENT_ROOT, collection, key);
+const LOOSE_CATEGORY = "general";
+
+const readCategory = (
+  collection: string,
+  key: string,
+  loose = false,
+): Category => {
+  const dir = loose
+    ? path.join(CONTENT_ROOT, collection)
+    : path.join(CONTENT_ROOT, collection, key);
   assertSafeName(key, dir);
   const meta = categoryConfig[`${collection}/${key}`];
 
@@ -164,7 +185,7 @@ const readCategory = (collection: string, key: string): Category => {
         entry.name.endsWith(".md") &&
         !entry.name.startsWith("_"),
     )
-    .map((entry) => readDoc(collection, key, entry.name))
+    .map((entry) => readDoc(collection, key, entry.name, loose))
     .filter((doc): doc is Doc => doc !== null)
     .sort(byOrderThenNewest);
 
@@ -174,6 +195,7 @@ const readCategory = (collection: string, key: string): Category => {
     title: meta?.title ?? humanize(key),
     description: meta?.description ?? fallbackCategory.description,
     icon: meta?.icon ?? fallbackCategory.icon,
+    color: meta?.color ?? "violet",
     docs,
   };
 };
@@ -199,8 +221,15 @@ export const getCollections = cache((): Collection[] => {
         description: meta?.description ?? fallbackCollection.description,
         icon: meta?.icon ?? fallbackCollection.icon,
         nav: collectionNav(key),
-        categories: listDirs(path.join(CONTENT_ROOT, key))
-          .map((category) => readCategory(key, category))
+        categories: [
+          ...listDirs(path.join(CONTENT_ROOT, key)).map((category) =>
+            readCategory(key, category),
+          ),
+          // .md files placed directly in a collection folder → "general" category
+          ...(listDirs(path.join(CONTENT_ROOT, key)).includes(LOOSE_CATEGORY)
+            ? []
+            : [readCategory(key, LOOSE_CATEGORY, true)]),
+        ]
           .filter((category) => category.docs.length > 0)
           .sort((a, b) => {
             const orderA = categoryConfig[`${key}/${a.key}`]?.order ?? 50;
@@ -214,6 +243,23 @@ export const getCollections = cache((): Collection[] => {
       const orderA = collectionConfig[a.key]?.order ?? 50;
       const orderB = collectionConfig[b.key]?.order ?? 50;
       return orderA - orderB || a.title.localeCompare(b.title);
+    })
+    .map((collection, _i, all) => {
+      // Rotate the palette across categories that don't set their own colour.
+      let cursor = 0;
+      for (const previous of all) {
+        for (const category of previous.categories) {
+          if (categoryConfig[`${previous.key}/${category.key}`]?.color)
+            continue;
+          if (previous === collection) {
+            category.color =
+              fallbackTopicColors[cursor % fallbackTopicColors.length];
+          }
+          cursor += 1;
+        }
+        if (previous === collection) break;
+      }
+      return collection;
     });
 });
 
@@ -339,3 +385,40 @@ export const getSearchIndex = cache((): SearchEntry[] => {
     headings: doc.headings,
   }));
 });
+
+/** `<collection>/<category>` → title + colour, for labelling cards. */
+export const getCategoryMap = (): Record<string, CategoryInfo> =>
+  Object.fromEntries(
+    getCollections().flatMap((collection) =>
+      collection.categories.map((category) => [
+        `${collection.key}/${category.key}`,
+        { title: category.title, color: category.color },
+      ]),
+    ),
+  );
+
+/** Ranked by front-matter `popularity`, then featured, then newest. */
+export const getPopularDocs = (limit: number): DocSummary[] =>
+  [...getAllDocs()]
+    .sort(
+      (a, b) =>
+        b.popularity - a.popularity ||
+        Number(b.featured) - Number(a.featured) ||
+        byNewest(a, b),
+    )
+    .slice(0, limit)
+    .map(toSummary);
+
+export const getKnowledgeStats = (): KnowledgeStats => {
+  const docs = getAllDocs();
+
+  return {
+    articles: docs.length,
+    topics: getCollections().reduce(
+      (sum, collection) => sum + collection.categories.length,
+      0,
+    ),
+    words: docs.reduce((sum, doc) => sum + doc.wordCount, 0),
+    lastUpdated: docs[0]?.updatedAt,
+  };
+};

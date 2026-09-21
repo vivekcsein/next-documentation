@@ -1,0 +1,91 @@
+/* Knowledge-base look: hero, topic tints, surfaces. */
+
+.text-gradient {
+  background-image: linear-gradient(
+    90deg,
+    #6f86ff 0%,
+    #a86bff 45%,
+    #e04fff 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Hero photo blends into the page on its left and bottom edges. */
+.hero-photo {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 42%),
+    linear-gradient(to top, transparent 0%, #000 30%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 42%),
+    linear-gradient(to top, transparent 0%, #000 30%);
+  mask-composite: intersect;
+}
+
+/* Panels in the right rail / sidebar */
+.panel {
+  border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+  border-radius: 1rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--card) 96%, white 4%),
+    var(--card)
+  );
+}
+
+/* Topic-tinted surfaces: set --topic (hex) on the element. */
+.topic-card {
+  border: 1px solid color-mix(in oklab, var(--topic) 26%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--topic) 16%, var(--card)) 0%,
+    var(--card) 75%
+  );
+  transition:
+    border-color 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.topic-card:hover {
+  border-color: color-mix(in oklab, var(--topic) 55%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px -14px
+    color-mix(in oklab, var(--topic) 60%, transparent);
+}
+
+.topic-tile {
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--topic) 95%, white 5%),
+    color-mix(in oklab, var(--topic) 62%, black 38%)
+  );
+  color: white;
+  box-shadow: 0 6px 16px -6px color-mix(in oklab, var(--topic) 70%, transparent);
+}
+
+.topic-badge {
+  border: 1px solid color-mix(in oklab, var(--topic) 30%, transparent);
+  background: color-mix(in oklab, var(--topic) 14%, transparent);
+  color: color-mix(in oklab, var(--topic) 70%, var(--foreground));
+}
+
+.topic-dot {
+  background: var(--topic);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--topic) 60%, transparent);
+}
+
+/* Glassy article art */
+.art-plate {
+  fill: color-mix(in oklab, var(--topic) 10%, transparent);
+  stroke: url(#art-stroke);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

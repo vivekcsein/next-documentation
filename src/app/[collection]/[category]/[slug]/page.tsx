@@ -4,6 +4,7 @@ import { AdSlot } from "@/components/features/ads-sense/AdSlot";
 import { DocActions } from "@/components/features/docs/DocActions";
 import { DocPager } from "@/components/features/docs/DocPager";
 import { DocToc } from "@/components/features/docs/DocToc";
+import { ReadingTracker } from "@/components/features/docs/ReadingTracker";
 import { RelatedDocs } from "@/components/features/docs/RelatedDocs";
 import { Markdown } from "@/components/features/markdown/Markdown";
 import { Breadcrumbs, Icon, ProgressBar } from "@/components/ui";
@@ -94,6 +95,7 @@ const DocPage = async ({ params }: DocPageProps) => {
   return (
     <div className="gap-10 xl:grid xl:grid-cols-[minmax(0,1fr)_17.5rem]">
       <ProgressBar />
+      <ReadingTracker docId={doc.id} />
 
       <article className="min-w-0 max-w-3xl">
         <Breadcrumbs

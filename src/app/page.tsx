@@ -1,129 +1,163 @@
-import Link from "next/link";
+import { FeaturedArticle } from "@/components/features/docs/article/FeaturedArticle";
 import { CategoryCard } from "@/components/features/docs/CategoryCard";
-import { DocCard } from "@/components/features/docs/DocCard";
-import { SearchTrigger } from "@/components/features/search/SearchTrigger";
-import { Card, Icon } from "@/components/ui";
-import { Badge } from "@/components/ui/badge/Badge";
+import { DocsHero } from "@/components/features/docs/hero/DocsHero";
+import {
+  type ContinueItem,
+  ContinueReading,
+} from "@/components/features/home/ContinueReading";
+import { type FeedItem, HomeFeed } from "@/components/features/home/HomeFeed";
+import { PopularList } from "@/components/features/home/PopularList";
+import { QuoteCard } from "@/components/features/home/QuoteCard";
+import { SectionHeading } from "@/components/features/home/SectionHeading";
+import { Icon } from "@/components/ui";
 import { appConfig } from "@/packages/configs/app.config";
 import {
-  getCategoryTitles,
-  getCollectionSummaries,
-  getFeaturedDocs,
-  getLatestDocs,
+  getAllDocs,
+  getCollections,
+  getKnowledgeStats,
+  getPopularDocs,
+  toSummary,
 } from "@/packages/utils/loader";
 
 const Home = () => {
-  const collections = getCollectionSummaries();
-  const titles = getCategoryTitles();
-  const featured = getFeaturedDocs(3);
-  const latest = getLatestDocs(6);
-  const totalGuides = collections.reduce((sum, c) => sum + c.count, 0);
+  const collections = getCollections();
+  const docs = getAllDocs();
+  const stats = getKnowledgeStats();
+
+  const topics = collections.flatMap((collection) =>
+    collection.categories.map((category) => ({
+      id: `${collection.key}/${category.key}`,
+      title: category.title,
+      href: `/${collection.key}/${category.key}`,
+      icon: category.icon,
+      color: category.color,
+      count: category.docs.length,
+    })),
+  );
+  const topicById = new Map(topics.map((topic) => [topic.id, topic]));
+  const viewAllHref = `/${collections[0]?.key ?? "docs"}`;
+
+  const topicOf = (doc: { collection: string; category: string }) =>
+    topicById.get(`${doc.collection}/${doc.category}`);
+
+  const featured = docs.find((doc) => doc.featured) ?? docs[0];
+  const featuredTopic = featured ? topicOf(featured) : undefined;
+
+  const feed: FeedItem[] = docs.slice(0, 12).flatMap((doc) => {
+    const topic = topicOf(doc);
+    return topic
+      ? [
+          {
+            id: doc.id,
+            href: doc.href,
+            title: doc.title,
+            description: doc.description,
+            readingMinutes: doc.readingMinutes,
+            updatedAt: doc.updatedAt,
+            topicId: topic.id,
+            topicTitle: topic.title,
+            color: topic.color,
+          },
+        ]
+      : [];
+  });
+
+  const continueItems: ContinueItem[] = docs.slice(0, 40).flatMap((doc) => {
+    const topic = topicOf(doc);
+    return topic
+      ? [
+          {
+            id: doc.id,
+            href: doc.href,
+            title: doc.title,
+            minutes: doc.readingMinutes,
+            topicTitle: topic.title,
+            color: topic.color,
+            icon: topic.icon,
+          },
+        ]
+      : [];
+  });
 
   return (
-    <>
-      <section className="hero-backdrop relative isolate overflow-hidden border-b border-border">
-        <div aria-hidden="true" className="grid-fade absolute inset-0 -z-10" />
-        <div className="container-page animate-fade-up flex flex-col items-center py-20 text-center sm:py-28">
-          <Badge className="mb-6" variant="primary">
-            <Icon name="sparkles" size={13} /> {appConfig.hero.badge}
-          </Badge>
-          <h1 className="max-w-3xl text-balance text-4xl font-bold tracking-tight sm:text-6xl">
-            {appConfig.hero.title}
-          </h1>
-          <p className="mt-5 max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground">
-            {appConfig.hero.subtitle}
-          </p>
+    <div className="container-page pb-16">
+      <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_19.0625rem] xl:gap-x-12">
+        <div className="min-w-0">
+          <DocsHero stats={stats} />
 
-          <div className="mt-9 flex w-full justify-center">
-            <SearchTrigger variant="hero" />
-          </div>
-
-          <p className="mt-6 text-sm text-muted-foreground">
-            {totalGuides} {totalGuides === 1 ? "guide" : "guides"} across{" "}
-            {collections.length}{" "}
-            {collections.length === 1 ? "section" : "sections"}
-          </p>
-        </div>
-      </section>
-
-      <div className="container-page space-y-16 py-14">
-        {featured.length > 0 && (
-          <section aria-labelledby="featured-heading">
-            <h2
-              className="text-2xl font-semibold tracking-tight"
-              id="featured-heading"
-            >
-              Start here
-            </h2>
-            <ul className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {featured.map((doc) => (
-                <li key={doc.id}>
-                  <Card variant="primary">
-                    <DocCard
-                      categoryTitle={
-                        titles[`${doc.collection}/${doc.category}`]
-                      }
-                      doc={doc}
-                    />
-                  </Card>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <section aria-labelledby="topics-heading">
-          <h2
-            className="text-2xl font-semibold tracking-tight"
-            id="topics-heading"
+          <HomeFeed
+            items={feed}
+            topics={topics.map(({ id, title, count }) => ({
+              id,
+              title,
+              count,
+            }))}
+            total={docs.length}
+            viewAllHref={viewAllHref}
           >
-            Browse by section
-          </h2>
-          <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {collections.map((collection) => (
-              <li key={collection.key}>
-                <CategoryCard
-                  count={collection.count}
-                  description={collection.description}
-                  href={`/${collection.key}`}
-                  icon={collection.icon}
-                  title={collection.title}
+            {featured && featuredTopic && (
+              <section aria-labelledby="featured-heading" id="featured">
+                <SectionHeading
+                  icon={
+                    <Icon
+                      className="fill-amber-400 text-amber-400"
+                      name="star"
+                      size={18}
+                    />
+                  }
+                  id="featured-heading"
+                  title="Featured Article"
                 />
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section aria-labelledby="latest-heading">
-          <div className="flex items-end justify-between">
-            <h2
-              className="text-2xl font-semibold tracking-tight"
-              id="latest-heading"
-            >
-              Latest guides
-            </h2>
-            {collections.length === 1 && (
-              <Link
-                className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                href={`/${collections[0].key}`}
-              >
-                View all <Icon name="arrow-right" size={14} />
-              </Link>
+                <FeaturedArticle
+                  category={featuredTopic}
+                  doc={toSummary(featured)}
+                />
+              </section>
             )}
-          </div>
-          <ul className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {latest.map((doc) => (
-              <li key={doc.id}>
-                <DocCard
-                  categoryTitle={titles[`${doc.collection}/${doc.category}`]}
-                  doc={doc}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
+
+            <section aria-labelledby="topics-heading" id="topics">
+              <SectionHeading
+                action={{ label: "View all topics", href: viewAllHref }}
+                icon={
+                  <Icon
+                    className="text-primary-soft"
+                    name="layout-grid"
+                    size={18}
+                  />
+                }
+                id="topics-heading"
+                title="Browse by Topic"
+              />
+              <ul className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+                {topics.map((topic) => (
+                  <li key={topic.id}>
+                    <CategoryCard
+                      color={topic.color}
+                      count={topic.count}
+                      href={topic.href}
+                      icon={topic.icon}
+                      title={topic.title}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </HomeFeed>
+        </div>
+
+        <aside className="mt-10 space-y-4 xl:mt-0 xl:pt-8">
+          <ContinueReading
+            fallbackId={featured?.id ?? ""}
+            items={continueItems}
+          />
+          <QuoteCard
+            author={appConfig.quote.author}
+            text={appConfig.quote.text}
+          />
+          <PopularList docs={getPopularDocs(5)} viewAllHref={viewAllHref} />
+        </aside>
       </div>
-    </>
+    </div>
   );
 };
 

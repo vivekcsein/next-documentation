@@ -9,7 +9,7 @@ const subscribe = () => () => {};
 const getIsApple = () => /Mac|iPhone|iPad/.test(navigator.platform);
 
 type SearchTriggerProps = {
-  variant?: "header" | "hero";
+  variant?: "header" | "hero" | "bar";
   className?: string;
 };
 
@@ -19,6 +19,30 @@ export const SearchTrigger = ({
 }: SearchTriggerProps) => {
   const { open } = useSearch();
   const isApple = useSyncExternalStore(subscribe, getIsApple, () => false);
+  const shortcut = isApple ? "⌘ K" : "Ctrl K";
+
+  if (variant === "bar") {
+    return (
+      <button
+        aria-label="Search articles, topics or keywords"
+        className={cn(
+          "group flex h-11 w-full items-center gap-3 rounded-xl border border-border bg-card/60 px-4 text-left text-sm text-muted-foreground transition-colors hover:border-primary/40",
+          className,
+        )}
+        onClick={open}
+        type="button"
+      >
+        <Icon name="search" size={17} />
+        <span className="flex-1 truncate">
+          Search articles, topics, or keywords…
+        </span>
+        <kbd className="hidden rounded-md border border-border bg-muted/60 px-2 py-0.5 text-[11px] font-medium sm:block">
+          {shortcut}
+        </kbd>
+      </button>
+    );
+  }
+
   const hero = variant === "hero";
 
   return (
@@ -44,7 +68,7 @@ export const SearchTrigger = ({
           hero && "text-xs",
         )}
       >
-        {isApple ? "⌘K" : "Ctrl K"}
+        {shortcut}
       </kbd>
     </button>
   );

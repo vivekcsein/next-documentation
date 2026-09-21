@@ -8,9 +8,15 @@ export const appConfig = Object.freeze({
   locale: "en_US",
   author: "Vivek",
   hero: {
-    badge: "Free developer guides",
-    title: "Find the guide. Copy the answer.",
+    eyebrow: "Knowledge Base",
+    title: "Things I’ve learned",
+    highlightPrefix: "building",
+    highlight: "on the web.",
     subtitle:
-      "Searchable, skimmable guides for people who build things. Press / anywhere to jump straight to what you need.",
+      "A growing collection of guides, notes, and resources on development, freelancing, careers and more.",
+  },
+  quote: {
+    text: "Discipline turns ideas into results.",
+    author: "Vivek",
   },
 });

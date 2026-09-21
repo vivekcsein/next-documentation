@@ -2,18 +2,9 @@ export const imagesConfig = {
   heroImages: {
     active: {
       id: "developer-workspace",
-      src: "/images/blog/developer-workspace.webp",
-      alt: "Dark developer workspace with a laptop and programming books",
+      src: "/images/hero/hero-3.jpg",
+      alt: "Dark developer workspace with a laptop, books and a mug",
       priority: true,
     },
-
-    images: [
-      {
-        id: "developer-workspace",
-        src: "/images/blog/developer-workspace.webp",
-        alt: "Dark developer workspace with a laptop and programming books",
-        priority: true,
-      },
-    ],
   },
 };
