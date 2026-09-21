@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CategoryCard } from "@/components/features/docs/CategoryCard";
 import { DocCard } from "@/components/features/docs/DocCard";
 import { SearchTrigger } from "@/components/features/search/SearchTrigger";
-import { Icon } from "@/components/ui";
+import { Card, Icon } from "@/components/ui";
 import { Badge } from "@/components/ui/badge/Badge";
 import { appConfig } from "@/packages/configs/app.config";
 import {
@@ -58,10 +58,14 @@ const Home = () => {
             <ul className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {featured.map((doc) => (
                 <li key={doc.id}>
-                  <DocCard
-                    categoryTitle={titles[`${doc.collection}/${doc.category}`]}
-                    doc={doc}
-                  />
+                  <Card variant="primary">
+                    <DocCard
+                      categoryTitle={
+                        titles[`${doc.collection}/${doc.category}`]
+                      }
+                      doc={doc}
+                    />
+                  </Card>
                 </li>
               ))}
             </ul>

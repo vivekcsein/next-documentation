@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AdSlot } from "@/components/ads-sense/AdSlot";
+import { AdSlot } from "@/components/features/ads-sense/AdSlot";
 import { DocActions } from "@/components/features/docs/DocActions";
 import { DocPager } from "@/components/features/docs/DocPager";
 import { DocToc } from "@/components/features/docs/DocToc";
