@@ -7,7 +7,7 @@ import type { TopicColor } from "@/packages/configs/content.config";
 import { imagesConfig } from "@/packages/configs/images.config";
 import { useCountUp } from "@/packages/hooks/use-count-up";
 import { topicStyle } from "@/packages/utils/topic";
-import type { KnowledgeStats } from "@/types/app";
+import type { KnowledgeStats } from "@/types/content";
 
 type HeroStatProps = {
   icon: IconName;

@@ -17,7 +17,7 @@ import { Icon } from "@/components/ui";
 import { Badge } from "@/components/ui/badge/Badge";
 import { cn } from "@/packages/utils/cn";
 import { searchDocs } from "@/packages/utils/search";
-import type { SearchEntry } from "@/types/app";
+import type { SearchEntry } from "@/types/content";
 
 type SearchContextValue = {
   index: SearchEntry[];

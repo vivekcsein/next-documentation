@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui";
-import type { DocSummary } from "@/types/app";
+import type { DocSummary } from "@/types/content";
 
 type DocPagerProps = {
   previous?: DocSummary;

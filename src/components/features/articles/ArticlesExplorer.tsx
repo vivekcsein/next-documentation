@@ -9,7 +9,7 @@ import { Pagination } from "@/components/ui/pagination/Pagination";
 import { shellConfig } from "@/packages/configs/shell.config";
 import { cn } from "@/packages/utils/cn";
 import { searchDocs } from "@/packages/utils/search";
-import type { ArticleListItem } from "@/types/app";
+import type { ArticleListItem } from "@/types/content";
 
 type ArticlesExplorerProps = {
   items: ArticleListItem[];

@@ -1,4 +1,4 @@
-import type { SearchEntry, TocItem } from "@/types/app";
+import type { SearchEntry, TocItem } from "@/types/content";
 
 export type SearchHit = {
   entry: SearchEntry;

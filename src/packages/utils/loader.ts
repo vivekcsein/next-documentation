@@ -25,7 +25,7 @@ import type {
   KnowledgeStats,
   SearchEntry,
   SidebarData,
-} from "../../types/app";
+} from "../../types/content";
 import {
   buildExcerpt,
   extractHeadings,

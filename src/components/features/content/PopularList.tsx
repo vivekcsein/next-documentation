@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui";
 import { formatReadingTime } from "@/packages/utils/format";
-import type { DocSummary } from "@/types/app";
+import type { DocSummary } from "@/types/content";
 
 type PopularListProps = {
   docs: DocSummary[];

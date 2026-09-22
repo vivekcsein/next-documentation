@@ -1,5 +1,5 @@
 import GithubSlugger from "github-slugger";
-import type { TocItem } from "../../types/app";
+import type { TocItem } from "../../types/content";
 
 /**
  * Pure markdown helpers (no fs) — everything the loader needs to derive

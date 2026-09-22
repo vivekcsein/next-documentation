@@ -10,7 +10,7 @@ import { topicPalette } from "@/packages/configs/content.config";
 import { shellConfig } from "@/packages/configs/shell.config";
 import { cn } from "@/packages/utils/cn";
 import { topicStyle } from "@/packages/utils/topic";
-import type { SidebarData } from "@/types/app";
+import type { SidebarData } from "@/types/content";
 import { SidebarToggle } from "./SidebarToggle";
 
 const rowBase =

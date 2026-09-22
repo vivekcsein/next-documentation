@@ -4,7 +4,7 @@ import type { TopicColor } from "@/packages/configs/content.config";
 import { cn } from "@/packages/utils/cn";
 import { formatDate, formatReadingTime } from "@/packages/utils/format";
 import { topicStyle } from "@/packages/utils/topic";
-import type { DocSummary } from "@/types/app";
+import type { DocSummary } from "@/types/content";
 
 type DocCardProps = {
   doc: Pick<

@@ -1,4 +1,4 @@
-import type { DocSummary } from "@/types/app";
+import type { DocSummary } from "@/types/content";
 import { DocCard } from "./DocCard";
 
 type RelatedDocsProps = {

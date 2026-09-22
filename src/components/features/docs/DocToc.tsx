@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/packages/utils/cn";
-import type { TocItem } from "@/types/app";
+import type { TocItem } from "@/types/content";
 
 type DocTocProps = {
   items: TocItem[];

@@ -8,7 +8,7 @@ import {
 import type { TopicColor } from "@/packages/configs/content.config";
 import { formatDate, formatReadingTime } from "@/packages/utils/format";
 import { topicStyle } from "@/packages/utils/topic";
-import type { DocSummary } from "@/types/app";
+import type { DocSummary } from "@/types/content";
 import { ArticleArt } from "./ArticleArt";
 
 type FeaturedArticleProps = {

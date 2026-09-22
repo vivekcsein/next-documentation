@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui";
-import type { SidebarData } from "@/types/app";
+import type { SidebarData } from "@/types/content";
 import { KnowledgeSidebar } from "./KnowledgeSidebar";
 
 /** < lg: floating button that opens the sidebar as a drawer. */
