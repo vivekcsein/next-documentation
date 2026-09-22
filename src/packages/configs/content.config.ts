@@ -29,13 +29,16 @@ export const fallbackTopicColors: readonly TopicColor[] = [
 /**
  * Content layout (nothing to register — folders ARE the structure):
  *
- *   src/content/<collection>/<category>/<slug>.md
- *                 │            │          └─ page   → /<collection>/<category>/<slug>
- *                 │            └─ category (group inside a section)
+ *   src/content/<collection>/<slug>.md              → /<collection>/<slug>
+ *   src/content/<collection>/<category>/<slug>.md   → /<collection>/<category>/<slug>
+ *                 │            │          └─ page
+ *                 │            └─ category (optional — group inside a section)
  *                 └─ collection = a top-level section → /<collection>
  *
- * New folder = new section / category. Everything below is OPTIONAL polish;
- * an unlisted folder gets a title derived from its name.
+ * New top-level folder = new section (/docs, /tutorials, /resources …). A
+ * file directly inside it has no category; a file inside a sub-folder is
+ * grouped under that category. Everything below is OPTIONAL polish; an
+ * unlisted folder gets a title derived from its name.
  */
 
 export type CollectionMeta = {
@@ -56,11 +59,23 @@ export const collectionConfig: Readonly<Record<string, CollectionMeta>> = {
     order: 1,
     icon: "book",
   },
-  code: {
-    title: "Code",
-    description: "Snippets, patterns and cheat-sheets you can copy and paste.",
+  tutorials: {
+    title: "Tutorials",
+    description: "Step-by-step, project-based walkthroughs.",
     order: 2,
-    icon: "code",
+    icon: "list-checks",
+  },
+  resources: {
+    title: "Resources",
+    description: "Cheat-sheets, references and other copy-ready material.",
+    order: 3,
+    icon: "layers",
+  },
+  articles: {
+    title: "Articles",
+    description: "Longer-form writing on how and why, not just how-to.",
+    order: 4,
+    icon: "file-text",
   },
 };
 
@@ -99,13 +114,6 @@ export const categoryConfig: Readonly<Record<string, CategoryMeta>> = {
     order: 99,
     icon: "file-text",
     color: "rose",
-  },
-  "code/general": {
-    title: "Snippets",
-    description: "Copy-ready code snippets and cheat-sheets.",
-    order: 1,
-    icon: "code",
-    color: "sky",
   },
 };
 

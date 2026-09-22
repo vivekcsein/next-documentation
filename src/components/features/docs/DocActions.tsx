@@ -2,13 +2,17 @@
 
 import { Button, Icon } from "@/components/ui";
 import { useCopyToClipboard } from "@/packages/hooks/use-copy-to-clipboard";
+import { useBookmarks } from "@/packages/hooks/use-reading-history";
 
 type DocActionsProps = {
+  docId: string;
   title: string;
   markdown: string;
 };
 
-export const DocActions = ({ title, markdown }: DocActionsProps) => {
+export const DocActions = ({ docId, title, markdown }: DocActionsProps) => {
+  const { ids, toggle } = useBookmarks();
+  const saved = ids.includes(docId);
   const page = useCopyToClipboard();
   const link = useCopyToClipboard();
 
@@ -25,6 +29,15 @@ export const DocActions = ({ title, markdown }: DocActionsProps) => {
       >
         <Icon name={link.copied ? "check" : "link"} />
         {link.copied ? "Link copied" : "Copy link"}
+      </Button>
+      <Button
+        aria-pressed={saved}
+        onClick={() => toggle(docId)}
+        size="sm"
+        variant="secondary"
+      >
+        <Icon className={saved ? "fill-current" : ""} name="bookmark" />
+        {saved ? "Saved" : "Save"}
       </Button>
     </div>
   );

@@ -19,11 +19,12 @@ type FeaturedArticleProps = {
 export const FeaturedArticle = ({ doc, category }: FeaturedArticleProps) => (
   <InteractiveCard
     aria-label={doc.title}
-    className="min-h-51.25 border-primary/35 shadow-[0_0_44px_-18px_var(--primary)]"
+    className="min-h-[205px] border-primary/35 shadow-[0_0_44px_-18px_var(--primary)]"
+    enableTilt={false}
     style={topicStyle(category.color)}
   >
     {/* Cover: real image if the doc sets `image`, generated art otherwise */}
-    <div className="absolute inset-y-0 right-0 w-[62%]">
+    <div className="fade-left absolute inset-y-0 right-0 w-[62%]">
       {doc.image ? (
         <Image
           alt=""
@@ -40,7 +41,6 @@ export const FeaturedArticle = ({ doc, category }: FeaturedArticleProps) => (
           icon={category.icon}
         />
       )}
-      <div className="absolute inset-0 bg-linear-to-r from-card via-card/40 to-transparent" />
     </div>
 
     <InteractiveCardContent className="justify-between gap-5 p-6 sm:min-h-[205px]">

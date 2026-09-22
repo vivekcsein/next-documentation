@@ -14,6 +14,7 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   CircleCheck,
   Clock,
@@ -48,6 +49,7 @@ import {
   Monitor,
   Moon,
   Package,
+  PanelLeft,
   Plus,
   Quote,
   Rocket,
@@ -60,6 +62,7 @@ import {
   ShoppingBag,
   ShoppingCart,
   Shuffle,
+  SlidersHorizontal,
   Sparkles,
   Star,
   Sun,
@@ -76,6 +79,9 @@ import {
 
 export const lucideIcons = {
   home: Home,
+  "chevron-left": ChevronLeft,
+  "panel-left": PanelLeft,
+  sliders: SlidersHorizontal,
   bookmark: Bookmark,
   code: Code2,
   flame: Flame,

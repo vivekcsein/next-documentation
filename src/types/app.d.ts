@@ -8,9 +8,10 @@ export type TocItem = {
 };
 
 export type Doc = {
-  /** `<collection>/<category>/<slug>` */
+  /** `<collection>[/<category>]/<slug>` */
   id: string;
   collection: string;
+  /** "" when the file sits directly in the collection folder (no category). */
   category: string;
   slug: string;
   href: string;
@@ -38,6 +39,7 @@ export type DocSummary = Omit<Doc, "content">;
 
 export type Category = {
   collection: string;
+  /** "" is the synthetic category holding files with no category folder. */
   key: string;
   title: string;
   description: string;
@@ -46,7 +48,7 @@ export type Category = {
   docs: Doc[];
 };
 
-/** A top-level section of the site: /docs, /code, /tutorials … */
+/** A top-level section of the site: /docs, /tutorials, /resources … */
 export type Collection = {
   key: string;
   title: string;
@@ -83,4 +85,41 @@ export type KnowledgeStats = {
   words: number;
   /** ISO 8601 of the most recently updated doc */
   lastUpdated?: string;
+};
+
+/** Everything the left sidebar needs (computed once on the server). */
+export type SidebarTopic = {
+  id: string;
+  title: string;
+  href: string;
+  color: TopicColor;
+  count: number;
+  docs: { id: string; title: string; href: string }[];
+};
+
+export type SidebarData = {
+  total: number;
+  topics: SidebarTopic[];
+  collections: { key: string; title: string; href: string; icon: IconName }[];
+};
+
+/** Client-safe row for article listings (filters, sorting, pagination). */
+export type ArticleListItem = {
+  id: string;
+  href: string;
+  title: string;
+  description: string;
+  readingMinutes: number;
+  updatedAt: string;
+  popularity: number;
+  topicId: string;
+  topicTitle: string;
+  color: TopicColor;
+  collectionKey: string;
+};
+
+export type ArticleList = {
+  items: ArticleListItem[];
+  topics: { id: string; title: string; count: number }[];
+  collections: { key: string; title: string; count: number }[];
 };

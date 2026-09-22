@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DocLibrary } from "@/components/features/docs/DocLibrary";
-import { Icon } from "@/components/ui/";
+import { Suspense } from "react";
+import { ArticlesExplorer } from "@/components/features/articles/ArticlesExplorer";
+import { Icon } from "@/components/ui";
 import {
-  getCategorySummaries,
+  getArticleList,
   getCollection,
-  getCollectionDocs,
   getCollections,
-  toSummary,
 } from "@/packages/utils/loader";
 
 type CollectionPageProps = {
@@ -38,9 +37,11 @@ const CollectionPage = async ({ params }: CollectionPageProps) => {
   const collection = getCollection(key);
   if (!collection) notFound();
 
+  const { items, topics } = getArticleList({ collection: collection.key });
+
   return (
-    <div className="animate-fade-up">
-      <header className="mb-8 flex items-start gap-4">
+    <div className="container-page animate-fade-up py-8">
+      <header className="mb-6 flex items-start gap-4">
         <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground">
           <Icon name={collection.icon} size={24} />
         </span>
@@ -53,10 +54,9 @@ const CollectionPage = async ({ params }: CollectionPageProps) => {
           </p>
         </div>
       </header>
-      <DocLibrary
-        categories={getCategorySummaries(collection.key)}
-        docs={getCollectionDocs(collection.key).map(toSummary)}
-      />
+      <Suspense fallback={null}>
+        <ArticlesExplorer items={items} topics={topics} />
+      </Suspense>
     </div>
   );
 };

@@ -12,16 +12,27 @@
   color: transparent;
 }
 
-/* Hero photo blends into the page on its left and bottom edges. */
+/* Hero photo melts into the page on every edge. */
 .hero-photo {
   -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, #000 42%),
-    linear-gradient(to top, transparent 0%, #000 30%);
+    linear-gradient(to right, transparent 0%, #000 40%),
+    linear-gradient(to top, transparent 0%, #000 30%),
+    linear-gradient(to left, transparent 0%, #000 14%),
+    linear-gradient(to bottom, transparent 0%, #000 12%);
   -webkit-mask-composite: source-in;
   mask-image:
-    linear-gradient(to right, transparent 0%, #000 42%),
-    linear-gradient(to top, transparent 0%, #000 30%);
+    linear-gradient(to right, transparent 0%, #000 40%),
+    linear-gradient(to top, transparent 0%, #000 30%),
+    linear-gradient(to left, transparent 0%, #000 14%),
+    linear-gradient(to bottom, transparent 0%, #000 12%);
   mask-composite: intersect;
+}
+
+/* Soft left edge for cover art — masks instead of an opaque overlay, so the
+   card's hover glow shows through without a visible seam. */
+.fade-left {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 38%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 38%);
 }
 
 /* Panels in the right rail / sidebar */
@@ -83,9 +94,38 @@
   stroke: url(#art-stroke);
 }
 
-.no-scrollbar {
-  scrollbar-width: none;
+/* ---------- Collapsible sidebar ----------
+   State lives on <html data-sidebar="collapsed"> (see SidebarToggle). */
+:root {
+  --sidebar-w: 14.5rem;
 }
-.no-scrollbar::-webkit-scrollbar {
+html[data-sidebar="collapsed"] {
+  --sidebar-w: 4.25rem;
+}
+
+.app-sidebar {
+  width: var(--sidebar-w);
+  transition: width 0.2s ease;
+}
+
+html[data-sidebar="collapsed"] .sb-hide {
   display: none;
 }
+html[data-sidebar="collapsed"] .sb-divider {
+  display: block;
+}
+html[data-sidebar="collapsed"] .app-sidebar .sb-row {
+  justify-content: center;
+  padding-inline: 0;
+}
+html[data-sidebar="collapsed"] .app-sidebar .sb-top,
+html[data-sidebar="collapsed"] .app-sidebar .sb-scroll,
+html[data-sidebar="collapsed"] .app-sidebar .sb-footer {
+  padding-inline: 0.5rem;
+}
+html[data-sidebar="collapsed"] .app-sidebar .sb-top {
+  justify-content: center;
+}
+/* .sb-scroll's own scrollbar styling now comes from features/scrollbar.css
+   (the global thin, primary-coloured scrollbar) — nothing sidebar-specific
+   needed here anymore. */

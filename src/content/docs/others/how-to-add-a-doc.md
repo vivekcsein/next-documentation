@@ -11,21 +11,26 @@ Every guide on this site is a plain `.md` file. There is no registry to edit and
 
 ## 1. Create the file
 
-The folder path is the URL: `src/content/<section>/<category>/<slug>.md` becomes `/<section>/<category>/<slug>`.
+The folder path is the URL. A file can sit directly inside a collection (no category), or inside a category sub-folder:
 
 ```text
 src/content/
-├── docs/                          →  /docs            (a section, shown in the header)
-│   ├── top-content/               →  /docs/top-content
-│   │   └── best-freelance-platforms-for-dev-teams-2026.md
+├── articles/
+│   └── how-i-structure-a-nextjs-project.md   →  /articles/how-i-structure-a-nextjs-project
+├── docs/
+│   ├── vercel/
+│   │   └── deployment.md                     →  /docs/vercel/deployment
+│   ├── frontend/
+│   │   └── react.md                          →  /docs/frontend/react
 │   └── others/
-│       └── how-to-add-a-doc.md    →  /docs/others/how-to-add-a-doc
-└── code/                          →  /code            (a new section — just make the folder)
-    └── javascript/
-        └── array-methods.md       →  /code/javascript/array-methods
+│       └── how-to-add-a-doc.md               →  /docs/others/how-to-add-a-doc
+├── tutorials/
+│   └── build-auth-with-nextjs.md             →  /tutorials/build-auth-with-nextjs
+└── resources/
+    └── javascript-cheatsheet.md              →  /resources/javascript-cheatsheet
 ```
 
-Use lowercase kebab-case names. A new folder becomes a new category, and a new top-level folder becomes a whole new section with its own page, sidebar and menu link — no code changes.
+Use lowercase kebab-case names. A new top-level folder is a whole new section (`/docs`, `/tutorials`, `/resources`, …) with its own index page — no code changes. A sub-folder inside it is a **category**, used for grouping, the sidebar's Topics list, and the filter chips on `/content/all` — it's optional, and a file with no category folder still gets its own page.
 
 ## 2. Write a heading
 
@@ -89,4 +94,4 @@ Set `NEXT_PUBLIC_ADSENSE_CLIENT` and the slot ids in your environment. Ads appea
 
 ## Next steps
 
-Run `bun run dev`, open the page, and use `/` to search for it.
+Run `bun run dev`, open the page, and use `/` to search for it. The knowledge-base home lives at `/content` (and at `/`); the full filterable, paginated list of everything is at `/content/all`.

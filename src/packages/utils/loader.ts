@@ -12,7 +12,9 @@ import {
   fallbackTopicColors,
   reservedCollections,
 } from "@/packages/configs/content.config";
+import { reservedRoutes } from "@/packages/configs/shell.config";
 import type {
+  ArticleList,
   Category,
   CategoryInfo,
   CategorySummary,
@@ -22,6 +24,7 @@ import type {
   DocSummary,
   KnowledgeStats,
   SearchEntry,
+  SidebarData,
 } from "../../types/app";
 import {
   buildExcerpt,
@@ -32,14 +35,17 @@ import {
 } from "./parse";
 
 /**
- * Filesystem-driven content:
+ * Filesystem-driven content — the folder depth decides the route:
  *
- *   src/content/<collection>/<category>/<slug>.md
- *                                    →  /<collection>/<category>/<slug>
+ *   src/content/<collection>/<slug>.md              →  /<collection>/<slug>
+ *   src/content/<collection>/<category>/<slug>.md   →  /<collection>/<category>/<slug>
  *
- * Drop a .md file in a folder and it is published. New folders become new
- * sections/categories. Files/folders starting with `_` or `.` are ignored;
- * `draft: true` hides a doc in production builds.
+ * Drop a .md file in a folder and it is published. A new top-level folder is
+ * a new collection (e.g. /docs, /tutorials, /resources); a file placed
+ * directly inside a collection folder is published with no category, one
+ * placed inside a sub-folder gets that folder as its category. Files/folders
+ * starting with `_` or `.` are ignored; `draft: true` hides a doc in
+ * production builds.
  */
 const CONTENT_ROOT = path.join(process.cwd(), "src/content");
 const SAFE_NAME = /^[a-z0-9][a-z0-9-]*$/;
@@ -97,15 +103,14 @@ const listDirs = (dir: string): string[] =>
 
 const readDoc = (
   collection: string,
+  /** "" when the file has no category (sits directly in the collection). */
   category: string,
   fileName: string,
-  /** File sits directly in the collection folder (no category folder). */
-  loose = false,
 ): Doc | null => {
   const slug = fileName.replace(/\.md$/, "");
-  const file = loose
-    ? path.join(CONTENT_ROOT, collection, fileName)
-    : path.join(CONTENT_ROOT, collection, category, fileName);
+  const file = category
+    ? path.join(CONTENT_ROOT, collection, category, fileName)
+    : path.join(CONTENT_ROOT, collection, fileName);
   assertSafeName(slug, file);
 
   const parsed = matter(fs.readFileSync(file, "utf-8"));
@@ -118,12 +123,13 @@ const readDoc = (
   }
 
   const meta = result.data;
+  const label = [collection, category, slug].filter(Boolean).join("/");
   if (meta.draft) {
     if (process.env.NODE_ENV === "production") return null;
-    console.warn(`"${collection}/${category}/${slug}" is marked as draft.`);
+    console.warn(`"${label}" is marked as draft.`);
   }
 
-  const id = `${collection}/${category}/${slug}`;
+  const id = [collection, category, slug].filter(Boolean).join("/");
   const defaults = docDefaults[id];
   const { title: headingTitle, body } = extractLeadingHeading(parsed.content);
 
@@ -147,7 +153,7 @@ const readDoc = (
     collection,
     category,
     slug,
-    href: `/${collection}/${category}/${slug}`,
+    href: `/${[collection, category, slug].filter(Boolean).join("/")}`,
     title,
     description,
     createdAt,
@@ -164,18 +170,11 @@ const readDoc = (
   };
 };
 
-const LOOSE_CATEGORY = "general";
-
-const readCategory = (
-  collection: string,
-  key: string,
-  loose = false,
-): Category => {
-  const dir = loose
-    ? path.join(CONTENT_ROOT, collection)
-    : path.join(CONTENT_ROOT, collection, key);
-  assertSafeName(key, dir);
-  const meta = categoryConfig[`${collection}/${key}`];
+/** key === "" reads the .md files sitting directly in the collection folder. */
+const readCategory = (collection: string, key: string): Category => {
+  const dir = path.join(CONTENT_ROOT, collection, key);
+  if (key) assertSafeName(key, dir);
+  const meta = key ? categoryConfig[`${collection}/${key}`] : undefined;
 
   const docs = fs
     .readdirSync(dir, { withFileTypes: true })
@@ -185,14 +184,14 @@ const readCategory = (
         entry.name.endsWith(".md") &&
         !entry.name.startsWith("_"),
     )
-    .map((entry) => readDoc(collection, key, entry.name, loose))
+    .map((entry) => readDoc(collection, key, entry.name))
     .filter((doc): doc is Doc => doc !== null)
     .sort(byOrderThenNewest);
 
   return {
     collection,
     key,
-    title: meta?.title ?? humanize(key),
+    title: key ? (meta?.title ?? humanize(key)) : "General",
     description: meta?.description ?? fallbackCategory.description,
     icon: meta?.icon ?? fallbackCategory.icon,
     color: meta?.color ?? "violet",
@@ -208,7 +207,7 @@ export const getCollections = cache((): Collection[] => {
   return listDirs(CONTENT_ROOT)
     .map((key) => {
       assertSafeName(key, path.join(CONTENT_ROOT, key));
-      if (reservedCollections.has(key)) {
+      if (reservedCollections.has(key) || reservedRoutes.includes(key)) {
         throw new Error(
           `"${key}" is reserved and can't be a content folder (src/content/${key}).`,
         );
@@ -222,13 +221,11 @@ export const getCollections = cache((): Collection[] => {
         icon: meta?.icon ?? fallbackCollection.icon,
         nav: collectionNav(key),
         categories: [
+          // .md files directly in the collection folder → synthetic "" category
+          readCategory(key, ""),
           ...listDirs(path.join(CONTENT_ROOT, key)).map((category) =>
             readCategory(key, category),
           ),
-          // .md files placed directly in a collection folder → "general" category
-          ...(listDirs(path.join(CONTENT_ROOT, key)).includes(LOOSE_CATEGORY)
-            ? []
-            : [readCategory(key, LOOSE_CATEGORY, true)]),
         ]
           .filter((category) => category.docs.length > 0)
           .sort((a, b) => {
@@ -295,6 +292,17 @@ export const getDoc = (
 ): Doc | undefined =>
   getCategory(collection, category)?.docs.find((doc) => doc.slug === slug);
 
+/** Resolves a catch-all `[...slug]` under a collection to a doc, if any. */
+export const resolveDoc = (
+  collection: string,
+  slugParts: string[],
+): Doc | undefined => {
+  if (slugParts.length === 1) return getDoc(collection, "", slugParts[0]);
+  if (slugParts.length === 2)
+    return getDoc(collection, slugParts[0], slugParts[1]);
+  return undefined;
+};
+
 export const toSummary = ({ content: _content, ...summary }: Doc): DocSummary =>
   summary;
 
@@ -321,6 +329,12 @@ export const getCategoryTitles = (): Record<string, string> =>
         category.title,
       ]),
     ),
+  );
+
+/** Real (non-synthetic) categories only — i.e. actual folders, for routing. */
+export const getRealCategories = (collectionKey: string): Category[] =>
+  (getCollection(collectionKey)?.categories ?? []).filter(
+    (category) => category.key !== "",
   );
 
 export const getLatestDocs = (limit: number): DocSummary[] =>
@@ -420,5 +434,87 @@ export const getKnowledgeStats = (): KnowledgeStats => {
     ),
     words: docs.reduce((sum, doc) => sum + doc.wordCount, 0),
     lastUpdated: docs[0]?.updatedAt,
+  };
+};
+
+export const getSidebarData = cache(
+  (): SidebarData => ({
+    total: getAllDocs().length,
+    // The synthetic "" category (loose files) isn't a real topic to filter by.
+    topics: getCollections().flatMap((collection) =>
+      collection.categories
+        .filter((category) => category.key !== "")
+        .map((category) => ({
+          id: `${collection.key}/${category.key}`,
+          title: category.title,
+          href: `/${collection.key}/${category.key}`,
+          color: category.color,
+          count: category.docs.length,
+          docs: category.docs.map(({ id, title, href }) => ({
+            id,
+            title,
+            href,
+          })),
+        })),
+    ),
+    collections: getCollections().map(({ key, title, icon }) => ({
+      key,
+      title,
+      href: `/${key}`,
+      icon,
+    })),
+  }),
+);
+
+/** Listing data for /articles, a collection page or a category page. */
+export const getArticleList = (scope?: {
+  collection?: string;
+  category?: string;
+}): ArticleList => {
+  const categories = getCollections().flatMap((collection) =>
+    collection.categories
+      .filter(
+        (category) =>
+          (!scope?.collection || collection.key === scope.collection) &&
+          (!scope?.category || category.key === scope.category),
+      )
+      .map((category) => ({ collection, category })),
+  );
+
+  const items = categories.flatMap(({ collection, category }) =>
+    category.docs.map((doc) => ({
+      id: doc.id,
+      href: doc.href,
+      title: doc.title,
+      description: doc.description,
+      readingMinutes: doc.readingMinutes,
+      updatedAt: doc.updatedAt,
+      popularity: doc.popularity,
+      topicId: `${collection.key}/${category.key}`,
+      topicTitle: category.title,
+      color: category.color,
+      collectionKey: collection.key,
+    })),
+  );
+
+  return {
+    items,
+    topics: categories
+      .filter(({ category }) => category.key !== "")
+      .map(({ collection, category }) => ({
+        id: `${collection.key}/${category.key}`,
+        title: category.title,
+        count: category.docs.length,
+      })),
+    collections: getCollections()
+      .filter(
+        (collection) =>
+          !scope?.collection || collection.key === scope.collection,
+      )
+      .map((collection) => ({
+        key: collection.key,
+        title: collection.title,
+        count: collection.categories.reduce((sum, c) => sum + c.docs.length, 0),
+      })),
   };
 };
