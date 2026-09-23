@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinFlow — Simplify Your Financial Operations</title>
+  <meta name="description" content="FinFlow is a modern landing page template for financial management and analytics platforms." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: { 950: "#0a0a14", 900: "#0e0e1c", 800: "#15152a", 700: "#1e1e3a" },
+            indigo: { 400: "#818cf8", 500: "#6366f1", 600: "#4f46e5" },
+          },
+          fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: "Inter", ui-sans-serif, system-ui; }
+    .grad-text { background: linear-gradient(90deg,#818cf8,#a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  </style>
+</head>
+<body class="bg-ink-950 text-slate-100">
+
+  <header class="sticky top-0 z-40 border-b border-white/5 bg-ink-950/80 backdrop-blur">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <a href="#" class="flex items-center gap-2 font-bold">
+        <span class="grid size-7 place-items-center rounded-lg bg-indigo-500 text-sm">F</span>
+        FinFlow
+      </a>
+      <nav class="hidden items-center gap-8 text-sm text-slate-300 md:flex">
+        <a href="#" class="hover:text-white">Product</a>
+        <a href="#" class="hover:text-white">Solutions</a>
+        <a href="#" class="hover:text-white">Pricing</a>
+        <a href="#" class="hover:text-white">FAQ</a>
+      </nav>
+      <a href="#" class="rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold hover:bg-indigo-400">Get Started</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="relative overflow-hidden">
+      <div class="pointer-events-none absolute -top-24 right-0 size-[32rem] rounded-full bg-indigo-500/20 blur-[110px]"></div>
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-24 lg:grid-cols-2">
+        <div>
+          <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-indigo-400">Financial operations</p>
+          <h1 class="text-4xl font-extrabold leading-tight sm:text-5xl">
+            Simplify Your <span class="grad-text">Financial Operations</span>
+          </h1>
+          <p class="mt-5 max-w-md text-slate-400">
+            Powerful tools for modern businesses — reconcile, forecast, and report from one connected dashboard.
+          </p>
+          <div class="mt-8 flex gap-3">
+            <a href="#" class="rounded-full bg-indigo-500 px-6 py-3 text-sm font-semibold hover:bg-indigo-400">Get Started</a>
+            <a href="#" class="rounded-full border border-white/15 px-6 py-3 text-sm font-semibold hover:bg-white/5">Watch Demo</a>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-ink-900 p-6 shadow-2xl">
+          <div class="flex items-center justify-between text-sm text-slate-400">
+            <span>Total Revenue</span>
+            <span class="text-emerald-400">+12.4%</span>
+          </div>
+          <p class="mt-1 text-3xl font-bold">$5,124,500</p>
+          <div class="mt-6 flex items-end gap-2">
+            <div class="h-10 w-6 rounded bg-indigo-500/30"></div>
+            <div class="h-16 w-6 rounded bg-indigo-500/50"></div>
+            <div class="h-8 w-6 rounded bg-indigo-500/30"></div>
+            <div class="h-20 w-6 rounded bg-indigo-500/70"></div>
+            <div class="h-14 w-6 rounded bg-indigo-500/50"></div>
+            <div class="h-24 w-6 rounded bg-indigo-500"></div>
+          </div>
+          <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4 text-sm">
+            <span class="text-slate-400">Active Users</span>
+            <span class="font-semibold">2,480</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-white/5 py-20">
+      <div class="mx-auto grid max-w-6xl gap-6 px-6 sm:grid-cols-3">
+        <div class="rounded-xl border border-white/10 bg-ink-900 p-6">
+          <h3 class="font-semibold">Real-time reconciliation</h3>
+          <p class="mt-2 text-sm text-slate-400">Every transaction matched automatically, across every account.</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-ink-900 p-6">
+          <h3 class="font-semibold">Forecasting built in</h3>
+          <p class="mt-2 text-sm text-slate-400">See cash flow three months out, updated daily.</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-ink-900 p-6">
+          <h3 class="font-semibold">Audit-ready reports</h3>
+          <p class="mt-2 text-sm text-slate-400">Export a clean, reconciled report in one click.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/5 py-10 text-center text-sm text-slate-500">
+    © 2026 FinFlow. All rights reserved.
+  </footer>
+</body>
+</html>

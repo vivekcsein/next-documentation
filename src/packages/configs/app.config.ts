@@ -6,7 +6,7 @@ export const appConfig = Object.freeze({
     "Free, no-fluff guides on freelancing, hiring platforms, developer jobs and building a business with code — written to be read fast and copied faster.",
   url: "https://vivekcse.xyz",
   locale: "en_US",
-  author: "Vivek Verma",
+  author: "Vivek",
   hero: {
     eyebrow: "Knowledge Base",
     title: "Things I’ve learned",
@@ -17,6 +17,6 @@ export const appConfig = Object.freeze({
   },
   quote: {
     text: "Discipline turns ideas into results.",
-    author: "Vivek Verma",
+    author: "Vivek",
   },
 });

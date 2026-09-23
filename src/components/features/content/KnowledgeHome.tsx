@@ -1,15 +1,18 @@
 import { AdSlot } from "@/components/features/ads-sense/AdSlot";
-import { FeaturedArticle } from "@/components/features/docs/article/FeaturedArticle";
-import { CategoryCard } from "@/components/features/docs/CategoryCard";
-import { DocsHero } from "@/components/features/docs/hero/DocsHero";
 import {
   type ContinueItem,
   ContinueReading,
-} from "@/components/features/home/ContinueReading";
-import { type FeedItem, HomeFeed } from "@/components/features/home/HomeFeed";
-import { PopularList } from "@/components/features/home/PopularList";
-import { QuoteCard } from "@/components/features/home/QuoteCard";
-import { SectionHeading } from "@/components/features/home/SectionHeading";
+} from "@/components/features/content/ContinueReading";
+import {
+  type FeedItem,
+  HomeFeed,
+} from "@/components/features/content/HomeFeed";
+import { PopularList } from "@/components/features/content/PopularList";
+import { QuoteCard } from "@/components/features/content/QuoteCard";
+import { SectionHeading } from "@/components/features/content/SectionHeading";
+import { FeaturedArticle } from "@/components/features/docs/article/FeaturedArticle";
+import { CategoryCard } from "@/components/features/docs/CategoryCard";
+import { DocsHero } from "@/components/features/docs/hero/DocsHero";
 import { Icon } from "@/components/ui";
 import { appConfig } from "@/packages/configs/app.config";
 import { shellConfig } from "@/packages/configs/shell.config";

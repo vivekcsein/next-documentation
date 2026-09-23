@@ -37,6 +37,7 @@ import {
   Heart,
   HeartPulse,
   Home,
+  Image as ImageIcon,
   Layers,
   LayoutGrid,
   Link2,
@@ -75,10 +76,12 @@ import {
   UserPlus,
   Watch,
   X,
+  Zap,
 } from "lucide-react";
 
 export const lucideIcons = {
   home: Home,
+  image: ImageIcon,
   "chevron-left": ChevronLeft,
   "panel-left": PanelLeft,
   sliders: SlidersHorizontal,
@@ -164,6 +167,7 @@ export const lucideIcons = {
   "flask-conical": FlaskConical,
   target: Target,
   trophy: Trophy,
+  zap: Zap,
 } satisfies Record<string, LucideIcon>;
 
 export type LucideIconName = keyof typeof lucideIcons;

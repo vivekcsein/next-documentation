@@ -4,15 +4,11 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import type { ReactNode } from "react";
 import { SearchProvider } from "@/components/features/search/SearchProvider";
-import { KnowledgeSidebar } from "@/components/features/shell/KnowledgeSidebar";
-import { MobileSidebar } from "@/components/features/shell/MobileSidebar";
 import { sidebarInitScript } from "@/components/features/shell/sidebar-state";
-import { SiteFooter } from "@/components/layout/SiteFooter";
-import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { adScriptSrc } from "@/packages/configs/ads.config";
 import { appConfig } from "@/packages/configs/app.config";
-import { getSearchIndex, getSidebarData } from "@/packages/utils/loader";
+import { getSearchIndex } from "@/packages/utils/loader";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -74,17 +70,7 @@ const RootLayout = ({ children }: RootLayoutProps) => (
           >
             Skip to content
           </a>
-          <SiteHeader />
-          <div className="flex flex-1">
-            <aside className="app-sidebar sticky top-(--header-h) hidden h-[calc(100svh-var(--header-h))] shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
-              <KnowledgeSidebar data={getSidebarData()} />
-            </aside>
-            <main className="min-w-0 flex-1" id="main">
-              {children}
-            </main>
-          </div>
-          <SiteFooter />
-          <MobileSidebar data={getSidebarData()} />
+          {children}
         </SearchProvider>
       </ThemeProvider>
       {adScriptSrc && (
